@@ -19,7 +19,8 @@ func main() {
 	result := solvePuzzle(lines)
 	fmt.Println("Solution2a:", result)
 
-
+	result2 := solvePuzzle2(lines)
+	fmt.Println("Solution2b:", result2)
 }
 
 func solvePuzzle(data []string) int {
@@ -61,6 +62,43 @@ func solvePuzzle(data []string) int {
 		if isValid {
 			result += partNumber
 		}
+	}
+
+	return result // Change this to the actual solution
+}
+
+func solvePuzzle2(data []string) int {
+	result := 0
+
+	for _, line := range data {
+		var minRed, minBlue, minGreen int
+
+		parts := strings.Split(line, ":")
+
+		rounds := strings.Split(parts[1], ";")
+		for _, round := range rounds {
+			pulls := strings.Split(round, ",")
+			for _, pull := range pulls {
+				parts = strings.Split(strings.TrimSpace(pull), " ")
+				count, err := strconv.Atoi(parts[0])
+				if err != nil {
+					panic(err)
+				}
+
+				color := strings.TrimSpace(parts[1])
+				if color == "red" {
+					minRed = max(minRed, count)
+				}
+				if color == "green" {
+					minGreen = max(minGreen, count)
+				}
+				if color == "blue" {
+					minBlue = max(minBlue, count)
+				}
+			}
+		}
+
+		result += minRed * minBlue * minGreen
 	}
 
 	return result // Change this to the actual solution
