@@ -19,9 +19,10 @@ func main() {
 
 	result := solvePuzzle(lines)
 	fmt.Println("Solution:", result)
-}
 
-// Card   1: 99 71 95 70 36 79 78 84 31 10 |  5 45 54 83  3 38 89 35 80 49 76 15 63 20 21 94 65 55 44  4 75 56 85 92 90
+	result2 := solvePuzzle2(lines)
+	fmt.Println("Solution4b:", result2)
+}
 
 func solvePuzzle(data []string) int {
 	result := 0
@@ -62,6 +63,27 @@ func solvePuzzle(data []string) int {
 	return result // Change this to the actual solution
 }
 
+func solvePuzzle2(data []string) int {
+	result := 0
+
+	copies := make(map[int]int)
+
+	for i := 0; i <= len(data)-1; i++ {
+		ticketString := data[i]
+
+		result += copies[i] + 1
+
+		ticketParts := strings.Split(ticketString, ":")
+		power := countWinnigNumbers(ticketParts[1])
+
+		for c := 0; c <= power-1; c++ {
+			copies[i+c+1] = copies[i+c+1] + (copies[i] + 1)
+		}
+	}
+
+	return result // Change this to the actual solution
+}
+
 func extractNumbers(s string) []int {
 	numStrs := strings.FieldsFunc(s, func(r rune) bool {
 		return r == ' '
@@ -75,4 +97,25 @@ func extractNumbers(s string) []int {
 		}
 	}
 	return nums
+}
+
+func countIntersection(winningNumbers []string, ticketNumbers []string) int {
+	intersections := make([]string, 0)
+	for _, n1 := range winningNumbers {
+		for _, n2 := range ticketNumbers {
+			if n1 == n2 {
+				intersections = append(intersections, n2)
+			}
+		}
+	}
+
+	return len(intersections)
+}
+
+func countWinnigNumbers(ticketString string) int {
+	ticketParts := strings.Split(ticketString, "|")
+	winningNumbers := strings.Fields(ticketParts[0])
+	ticketNumbers := strings.Fields(ticketParts[1])
+
+	return countIntersection(winningNumbers, ticketNumbers)
 }
