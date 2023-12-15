@@ -130,6 +130,9 @@ func main() {
 
 	result := solvePuzzle(columns)
 	fmt.Println("Solution5a:", result)
+
+	result2 := solvePuzzle2(columns)
+	fmt.Println("Solution5b:", result2)
 }
 
 func solvePuzzle(data Columns) int64 {
@@ -144,11 +147,38 @@ func solvePuzzle(data Columns) int64 {
 		humidity := adjustValue(temperature, data.TemperatureToHumidity)
 		location := adjustValue(humidity, data.HumidityToLocation)
 
-		if location<res{
-			res=location
+		if location < res {
+			res = location
 		}
 	}
 
+	return res
+}
+
+func solvePuzzle2(data Columns) int64 {
+	var res int64 = 0
+
+exit:
+	for {
+		humidity := restoreValue(res, data.HumidityToLocation)
+		temperature := restoreValue(humidity, data.TemperatureToHumidity)
+		light := restoreValue(temperature, data.LightToTemperature)
+		water := restoreValue(light, data.WaterToLight)
+		fertilizer := restoreValue(water, data.FertilizerToWater)
+		soil := restoreValue(fertilizer, data.SoilToFertilizer)
+		seed := restoreValue(soil, data.SeedToSoil)
+
+		for i := 0; i < len(data.Seeds); i += 2 {
+			base := data.Seeds[i]
+			length := data.Seeds[i+1]
+
+			if (base <= seed) && (seed < (base + length)) {
+				break exit
+			}
+		}
+
+		res += 1
+	}
 	return res
 }
 
@@ -161,3 +191,11 @@ func adjustValue(n int64, mappings []Mapping) int64 {
 	return n
 }
 
+func restoreValue(n int64, mappings []Mapping) int64 {
+	for _, mapping := range mappings {
+		if (mapping.DestinationRangeStart <= n) && (n <= (mapping.DestinationRangeStart + mapping.RangeLen)) {
+			return mapping.SourceRangeStart + (n - mapping.DestinationRangeStart)
+		}
+	}
+	return n
+}
